@@ -18,11 +18,18 @@ def index(request):
     if query:
         tasks = tasks.filter(title__icontains=query)
 
-    
-    if request.GET.get('order') == 'due':
-        tasks = tasks.order_by('due_at')
+    #フィルタ判定
+    filter_by = request.GET.get("filter")
+    if filter_by == "uncompleted":
+        task_qs = Task.objects.filter(completed=False)
     else:
-        tasks = tasks.order_by('-posted_at')
+        task_qs = Task.objects.all()
+
+    #ソート機能
+    if request.GET.get('order') == 'due':
+        tasks = task_qs.order_by('due_at')
+    else:
+        tasks = task_qs.order_by('-posted_at')
 
     context = {
         'tasks': tasks,
@@ -74,7 +81,6 @@ def close(request, task_id):
     task.save()
     return redirect(index)
 
-
 def task_list(request):
     query = request.GET.get('query', '')
     if query:
@@ -83,3 +89,4 @@ def task_list(request):
         tasks = Task.objects.all()
     tasks = tasks.order_by('-posted_at')
     return render(request, 'task_list.html', {'tasks': tasks, 'query': query, 'now': timezone.now()})
+
