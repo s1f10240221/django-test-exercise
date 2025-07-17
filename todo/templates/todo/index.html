@@ -32,6 +32,11 @@
       <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
     </div>
 
+    <form method="get" action="">
+      <input type="text" name="query" placeholder="タイトルで検索" value="{{ request.GET.query }}">
+      <button type="submit">検索</button>
+    </form>
+
     {% for task in tasks %}
     <div class="text">
       <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>

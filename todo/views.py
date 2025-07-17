@@ -3,6 +3,7 @@ from django.http import Http404
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from todo.models import Task
+from django.utils import timezone
 
 
 # Create your views here.
@@ -11,14 +12,21 @@ def index(request):
         task = Task(title=request.POST['title'],
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
+    
+    query = request.GET.get('query', '')
+    tasks = Task.objects.all()
+    if query:
+        tasks = tasks.filter(title__icontains=query)
 
+    
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = tasks.order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = tasks.order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'query': query,
     }
     return render(request, 'todo/index.html', context)
 
@@ -65,4 +73,13 @@ def close(request, task_id):
     task.completed = True
     task.save()
     return redirect(index)
-  
+
+
+def task_list(request):
+    query = request.GET.get('query', '')
+    if query:
+        tasks = Task.objects.filter(title__icontains=query)
+    else:
+        tasks = Task.objects.all()
+    tasks = tasks.order_by('-posted_at')
+    return render(request, 'task_list.html', {'tasks': tasks, 'query': query, 'now': timezone.now()})
