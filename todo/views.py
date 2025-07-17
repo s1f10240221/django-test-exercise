@@ -12,10 +12,18 @@ def index(request):
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
 
-    if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+    #フィルタ判定
+    filter_by = request.GET.get("filter")
+    if filter_by == "uncompleted":
+        task_qs = Task.objects.filter(completed=False)
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        task_qs = Task.objects.all()
+
+    #ソート機能
+    if request.GET.get('order') == 'due':
+        tasks = task_qs.order_by('due_at')
+    else:
+        tasks = task_qs.order_by('-posted_at')
 
     context = {
         'tasks': tasks
@@ -65,4 +73,3 @@ def close(request, task_id):
     task.completed = True
     task.save()
     return redirect(index)
-  
