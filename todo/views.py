@@ -13,23 +13,27 @@ def index(request):
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
     
-    query = request.GET.get('query', '')
+    
+    
+    #最初は全部
     tasks = Task.objects.all()
+
+    #検索
+    query = request.GET.get('query', '')
     if query:
         tasks = tasks.filter(title__icontains=query)
 
     #フィルタ判定
     filter_by = request.GET.get("filter")
     if filter_by == "uncompleted":
-        task_qs = Task.objects.filter(completed=False)
-    else:
-        task_qs = Task.objects.all()
+        tasks = tasks.filter(completed=False)
+    
 
     #ソート機能
     if request.GET.get('order') == 'due':
-        tasks = task_qs.order_by('due_at')
+        tasks = tasks.order_by('due_at')
     else:
-        tasks = task_qs.order_by('-posted_at')
+        tasks = tasks.order_by('-posted_at')
 
     context = {
         'tasks': tasks,
