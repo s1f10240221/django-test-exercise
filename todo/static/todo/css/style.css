@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background: #f9f9f9;
+  background: #E0E0E0;
   margin: 0;
   padding: 20px;
   color: #333;
@@ -80,4 +80,13 @@ ul {
 ul li:last-child {
   font-weight: bold;
   color: #4a90e2;
+}
+
+.iniad-logo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: auto;
+    z-index: 1000;
 }
